@@ -1,0 +1,54 @@
+# AI Feature Audit
+
+## Mode
+
+- Use the active `CLAUDE.md` context if present, then repository evidence.
+- Work in the current Claude Code Cloud session. Do not assume hidden background runs or extra delegation mechanisms unless the user explicitly provides them.
+- Analysis-only mode: inspect the repository, do not edit product code.
+
+## Goal
+
+Audit AI-assisted product behavior for correctness, safety, cost, reliability, privacy, and regression risk. Keep only issues supported by current repository evidence, not generic AI best practices.
+
+## Inspect
+
+AI entrypoints, model clients, prompt/message builders, structured-output schemas, tool/function definitions, parsers, streaming handlers, queues/jobs, cache/retry/rate-limit code, RAG/OCR/ML dependencies, user-visible AI states, admin/operator controls, env/config validation, tests/evals, fixtures, logs/metrics/traces, docs, and `docs/ai_map.md` when present as a discovery aid.
+
+## Issue classes
+
+Look for concrete, reachable issues in:
+
+- Input/output contracts: unvalidated model inputs, weak schema parsing, enum/nullability drift, brittle natural-language parsing, partial-response handling, and unhandled refusal/empty output states.
+- Prompt and tool boundaries: duplicated prompt rules, stale templates, unsafe tool argument construction, missing tool-result validation, prompt injection exposure through untrusted content, and mismatched user/system intent.
+- Reliability: retry storms, non-idempotent replays, streaming state bugs, cache key drift, missing timeout/cancellation behavior, queue amplification, and degraded-provider behavior that misleads users.
+- Safety/privacy: PII or secret leakage into prompts/logs, unsafe storage of model inputs/outputs, missing tenant/user scoping in AI context, policy bypass via background jobs, and user-visible diagnostic leakage.
+- Cost and limits: unbounded context growth, duplicate model calls, missing rate/usage controls, large attachment handling without guardrails, and absent operator visibility for hot paths.
+- Product truthfulness: UI promises not backed by model behavior, generated claims without source evidence, missing citations/source labels when the feature presents factual answers.
+- Evaluation: missing or false eval coverage for critical prompts, RAG answers, OCR extraction, tool calls, structured outputs, safety boundaries, or known regressions.
+
+## Priority model
+
+### P0
+
+Reachable data/tenant leakage, unsafe tool action, destructive or paid action driven by unvalidated AI output, secret/PII exposure, critical hallucination with product/legal/security impact, or AI behavior that breaks a public/internal contract.
+
+### P1
+
+Important AI workflow with weak schema/tool validation, misleading UI state, non-idempotent retry/replay, missing eval for a critical behavior, cost/rate-limit risk on a reachable hot path, or duplicated prompt/domain logic that can diverge.
+
+### P2
+
+Lower-risk but concrete quality issue: stale AI docs/map, weak diagnostics boundary, unclear generated-content labeling, localized copy drift, noisy logs, or minor eval gap with reachable regression value.
+
+## Work item quality
+
+- Output findings as compact chat work items; do not assume a platform-specific task workflow or extra delegation mechanism.
+- Each work item must cite `path:line[-line]` evidence for the AI behavior, owner layer, and affected consumer or user state, plus symbol when possible.
+- Include model/prompt/tool/index/eval owner when relevant, expected behavior, acceptance criteria, and validation direction.
+- Use one unambiguous fix direction per work item; no alternatives.
+- Merge symptoms under the same AI capability owner unless fixes, rollout units, eval strategy, or safety boundary differ.
+- Do not report abstract AI risks without current repo reachability, user impact, cost impact, or regression risk.
+
+## Output contract
+
+Produce chat work items grouped by P0/P1/P2. If none qualify, output each priority with `None`. Use compact chat bullets; do not force a rigid work-item schema.
