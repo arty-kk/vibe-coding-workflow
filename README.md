@@ -5,13 +5,13 @@
 В репозитории должен лежать только один durable-файл под конкретный агент:
 
 ```text
-codex/repo_only/AGENTS.md                  → положить в root репозитория как AGENTS.md
-claude/repo_only/CLAUDE.md      → положить в root репозитория как CLAUDE.md
+codex/AGENTS.md                  → положить в root репозитория как AGENTS.md
+claude/CLAUDE.md      → положить в root репозитория как CLAUDE.md
 ```
 
 Правило изоляции: для одной рабочей сессии и одного репозитория активен только один durable-файл. Если работа идёт в Codex, используется только `AGENTS.md`. Если работа идёт в Claude Code Cloud, используется только `CLAUDE.md`. Эти файлы не должны импортировать друг друга, ссылаться друг на друга, быть symlink-ами друг на друга или использоваться как fallback друг для друга.
 
-Все остальные файлы из `manual_prompts/` используются вручную: открыть нужный `.md`, вставить его в чат с агентом и добавить текущий контекст задачи, ссылку на diff, вывод предыдущего аудита или короткое описание scope.
+Все остальные файлы из `prompts/` используются вручную: открыть нужный `.md`, вставить его в чат с агентом и добавить текущий контекст задачи, ссылку на diff, вывод предыдущего аудита или короткое описание scope.
 
 ## Что считать финальной версией
 
@@ -29,9 +29,9 @@ vibe_coding_workflow/
   README.md
 
   codex/
-    repo_only/
+    
       AGENTS.md
-    manual_prompts/
+    prompts/
       00_core_intake_synthesis/
       01_review_quality_gates/
       02_repository_maps/
@@ -46,9 +46,9 @@ vibe_coding_workflow/
       11_reliability_consistency_perf/
 
   claude/
-    repo_only/
+    
       CLAUDE.md
-    manual_prompts/
+    prompts/
       00_core_intake_synthesis/
       01_review_quality_gates/
       02_repository_maps/
@@ -67,16 +67,16 @@ vibe_coding_workflow/
 
 ## Как использовать Codex-ветку
 
-1. Положить `codex/repo_only/AGENTS.md` в root проекта как `AGENTS.md`. Не добавлять и не импортировать второй durable-файл для другого агента.
-2. Для конкретной задачи брать один файл из `codex/manual_prompts/`.
+1. Положить `codex/AGENTS.md` в root проекта как `AGENTS.md`. Не добавлять и не импортировать второй durable-файл для другого агента.
+2. Для конкретной задачи брать один файл из `codex/prompts/`.
 3. Вставлять этот файл в чат с Codex вместе с конкретным контекстом: задача, diff, ошибки, audit output, scope или ссылки на файлы.
 4. Не вставлять весь архив целиком.
 5. После значимого изменения запускать `01_review_quality_gates/Patch Checking.md`.
 
 ## Как использовать Claude Code Cloud-ветку
 
-1. Положить `claude/repo_only/CLAUDE.md` в root проекта как `CLAUDE.md`. Не добавлять и не импортировать второй durable-файл для другого агента.
-2. Для конкретной задачи брать один файл из `claude/manual_prompts/`.
+1. Положить `claude/CLAUDE.md` в root проекта как `CLAUDE.md`. Не добавлять и не импортировать второй durable-файл для другого агента.
+2. Для конкретной задачи брать один файл из `claude/prompts/`.
 3. Вставлять этот файл в чат с Claude Code Cloud вместе с контекстом задачи.
 4. Не ожидать нативных task-sub. Audit-промпты в Claude-ветке должны выдавать обычные chat work items, которые можно вручную использовать в следующем сообщении.
 5. После значимого изменения запускать `01_review_quality_gates/Patch Checking.md`.
@@ -1214,8 +1214,8 @@ AI Eval Harness.md
 ```text
 1. Не вставлять весь pack целиком.
 2. Не класть manual_prompts в репозиторий как project docs.
-3. Для Codex использовать codex/repo_only/AGENTS.md.
-4. Для Claude Code Cloud использовать claude/repo_only/CLAUDE.md.
+3. Для Codex использовать codex/AGENTS.md.
+4. Для Claude Code Cloud использовать claude/CLAUDE.md.
 5. Для каждой задачи вставлять один релевантный prompt-skill.
 6. Для нескольких findings сначала запускать Synthesis.md.
 7. После meaningful patch запускать Patch Checking.md; он должен проверять весь branch/diff range, а не только последний commit.
